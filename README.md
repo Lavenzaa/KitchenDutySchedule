@@ -8,10 +8,16 @@ The application provides a user-friendly interface allowing Resident Assistant t
 
 ## Built With
 
-- [![Python]][Python-url]
-- **Tkinter** - The Python framework used for creating the GUI.
-- **Google API** - Used to leverage Google's functionalities.
+[![Python]][Python-url]
+<a href="https://docs.python.org/3/library/tkinter.html">
+  <img src="https://img.shields.io/badge/Tkinter-red" alt="Tkinter" width="70" height="25">
+</a>
+<a href="https://developers.google.com/calendar/api/guides/overview">
+  <img src="https://img.shields.io/badge/Google%20API-green?logo=%22google%22" alt="Google API" width="100" height="25">
+</a>
 
+[Google]: https://img.shields.io/badge/Google%20API-green?logo=%22google%22
+[Google-url]: https://developers.google.com/calendar/api/guides/overview
 [Python]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 [Python-url]: https://www.python.org/
 
