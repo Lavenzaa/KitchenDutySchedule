@@ -4,7 +4,7 @@
 
 A custom-built GUI desktop application that automates and improves the process of the Kitchen Duty scheduling for Resident Assistants at Ritsumeikan Asia Pacific University. Developed in response to a friend's request to streamline the scheduling workflow, this application alleviates the administrative burden of creating and managing a monthly duty roster manually.
 
-The application provides a user-friendly interface allowing Resident Assistant to easily input student details, manage shifts, and generate an organized and balanced monthly schedule based on saved details. The schedule is generated on the user's Google Calendar where they are able to edit it as they please. This not only saves time but also ensures fairness in task distribution among the residents.
+The application provides a user-friendly interface allowing Resident Assistants to easily input student details, manage shifts, and generate an organized and balanced monthly schedule based on saved details. The schedule is generated on the user's Google Calendar where they are able to edit it as they please. This not only saves time but also ensures fairness in task distribution among the residents.
 
 ## Built With
 
@@ -16,8 +16,6 @@ The application provides a user-friendly interface allowing Resident Assistant t
   <img src="https://img.shields.io/badge/Google%20API-green?logo=%22google%22" alt="Google API" width="100" height="25">
 </a>
 
-[Google]: https://img.shields.io/badge/Google%20API-green?logo=%22google%22
-[Google-url]: https://developers.google.com/calendar/api/guides/overview
 [Python]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 [Python-url]: https://www.python.org/
 
