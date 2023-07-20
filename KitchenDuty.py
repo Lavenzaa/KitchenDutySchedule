@@ -162,14 +162,7 @@ def validate(input):
     else:
         return False
 
-
-
-# global variable to keep track of editing state
-is_editing = False
-selected_id=None
-def main():
-
-    def styleTree():
+def styleTree():
         # Create the style
         style = ttk.Style()
         style.theme_use("clam")
@@ -189,11 +182,11 @@ def main():
                     background=[('active', 'grey')],
                     foreground=[('active', 'white')])
     
-    def month_to_int(month):
+def month_to_int(month):
         month_dict = {"Jan / 1 月": 1, "Feb / 2 月": 2, "Mar / 3 月": 3, "Apr / 4 月": 4, "May / 5 月": 5, "Jun / 6 月": 6, "Jul / 7 月": 7, "Aug / 8 月": 8, "Sep / 9 月": 9, "Oct / 10 月": 10, "Nov / 11 月": 11, "Dec / 12 月": 12}
         return month_dict[month]
-    
-    def openDir():
+
+def openDir():
         # Ask for confirmation before changing the user
         response = messagebox.askyesno("Confirmation",
                                     "Are you sure you want to change the user?\nユーザー変更てもよろしいですか？")
@@ -211,11 +204,8 @@ def main():
         else:
             # If the user clicked 'No', do nothing
             return
-
-
-
-
-    def treeview_sort_column(tv, col, reverse):
+        
+def treeview_sort_column(tv, col, reverse):
         l = [(tv.set(k, col), k) for k in tv.get_children('')]
         try:
             l.sort(key = lambda x: int(x[0]), reverse=reverse)
@@ -228,6 +218,11 @@ def main():
         # reverse sort next time
         tv.heading(col, command=lambda: treeview_sort_column(tv, col, not reverse))
 
+# global variable to keep track of editing state
+is_editing = False
+selected_id=None
+
+def main():
 
     def button_callback():
         month = optionmenu_1.get()
