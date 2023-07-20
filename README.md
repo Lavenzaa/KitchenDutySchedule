@@ -17,7 +17,7 @@ The application provides a user-friendly interface allowing Resident Assistant t
 
 ## Getting Started
 
-PLEASE READ THE SETUP GUIDE IN THE GUIDES FOLDER BEFORE ATTEMPTING TO USE THIS APP!!!  
+**PLEASE READ THE SETUP GUIDE IN THE GUIDES FOLDER BEFORE ATTEMPTING TO USE THIS APP!!!**  
 The details.json file is used to store the student records, it contains sample data to get the app started.  
 **How your folder should look like before running the script:**
 <kbd> <img src="images/folder.PNG" /> </kbd>
