@@ -20,7 +20,7 @@ The application provides a user-friendly interface allowing Resident Assistant t
 PLEASE READ THE SETUP GUIDE IN THE GUIDES FOLDER BEFORE ATTEMPTING TO USE THIS APP!!!  
 The details.json file is used to store the student records, it contains sample data to get the app started.  
 **How your folder should look like before running the script:**
-![Folder](images/folder.PNG)
+<kbd> <img src="images/folder.PNG" /> </kbd>
 
 Along with the setup guide is a user manual to guide users on what they can do.
 
@@ -34,14 +34,14 @@ Along with the setup guide is a user manual to guide users on what they can do.
 
 ![Records](images/recordsPage.PNG)
 
-#### Shifts Done Tab (Left: Schedule not Generated | Right: Schedule generated):
-
-![Shift Empty](images/shiftsEmpty.PNG)
-![Shift Loaded](images/shiftsLoaded.PNG)
+#### Shifts Done Tab:
+Schedule not Generated     |  Schedule Generated
+:-------------------------:|:-------------------------:
+![Shift Empty](images/shiftsEmpty.PNG) | ![Shift Loaded](images/shiftsLoaded.PNG)
 
 #### Generated Schedule Example:
 
-![Schedule](images/schedule.PNG)
+<kbd> <img src="images/schedule.PNG" /> </kbd>
 
 ## Features
 
