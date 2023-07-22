@@ -10,10 +10,10 @@ The application provides a user-friendly interface allowing Resident Assistants 
 
 [![Python]][Python-url]
 <a href="https://docs.python.org/3/library/tkinter.html">
-  <img src="https://img.shields.io/badge/Tkinter-red" alt="Tkinter" width="70" height="25">
+<img src="https://img.shields.io/badge/Tkinter-red" alt="Tkinter" width="70" height="25">
 </a>
 <a href="https://developers.google.com/calendar/api/guides/overview">
-  <img src="https://img.shields.io/badge/Google%20API-green?logo=%22google%22" alt="Google API" width="100" height="25">
+<img src="https://img.shields.io/badge/Google%20API-green?logo=%22google%22" alt="Google API" width="100" height="25">
 </a>
 
 [Python]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
@@ -39,9 +39,10 @@ Along with the setup guide is a user manual to guide users on what they can do.
 ![Records](images/recordsPage.PNG)
 
 #### Shifts Done Tab:
-Schedule not Generated     |  Schedule Generated
-:-------------------------:|:-------------------------:
-![Shift Empty](images/shiftsEmpty.PNG) | ![Shift Loaded](images/shiftsLoaded.PNG)
+
+|         Schedule not Generated         |            Schedule Generated            |
+| :------------------------------------: | :--------------------------------------: |
+| ![Shift Empty](images/shiftsEmpty.PNG) | ![Shift Loaded](images/shiftsLoaded.PNG) |
 
 #### Generated Schedule Example:
 
@@ -57,7 +58,7 @@ Schedule not Generated     |  Schedule Generated
 #### Records Tab:
 
 - CRUD for student records
-- Sort by Name, Room No and Enrollment
+- Sort by Name, Room No. and Enrollment
 
 #### Shifts Done Tab:
 
@@ -69,11 +70,11 @@ Schedule not Generated     |  Schedule Generated
 - Generate schedule monthly
 - 2 dorm residents per day/night
 - Avoid same pairs within the month
-- Record to store name, room no and enrollment period
+- Record to store name, room no. and enrollment period
 - Residents move in and out so records should be editable
 - Max shifts in a month limited to 3
 - Record of how many shifts done in a month for each resident (No recording needed, just display)
-- In Google Calendar: Tangerine for fall students and lavendar for spring
+- In Google Calendar: Tangerine for fall students and lavender for spring
 - Allow Resident Assistants to make final changes to the schedule
 - Make records and shifts done sortable
 
