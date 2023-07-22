@@ -93,6 +93,20 @@ def style_tree():
                     background=[('active', 'grey')],
                     foreground=[('active', 'white')])
 
+#Used to allow sorting of tree by clicking on heading
+def treeview_sort_column(tv, col, reverse):
+        l = [(tv.set(k, col), k) for k in tv.get_children('')]
+        try:
+            l.sort(key = lambda x: int(x[0]), reverse=reverse)
+        except ValueError:
+            l.sort(reverse=reverse)
+
+        # rearrange items in sorted positions
+        for index, (val, k) in enumerate(l):
+            tv.move(k, '', index)
+        # reverse sort next time
+        tv.heading(col, command=lambda: treeview_sort_column(tv, col, not reverse))
+
 #Convert the selected month to int
 def month_to_int(month):
         month_dict = {"Jan / 1 月": 1, "Feb / 2 月": 2, "Mar / 3 月": 3, "Apr / 4 月": 4, "May / 5 月": 5, "Jun / 6 月": 6, "Jul / 7 月": 7, "Aug / 8 月": 8, "Sep / 9 月": 9, "Oct / 10 月": 10, "Nov / 11 月": 11, "Dec / 12 月": 12}
@@ -117,20 +131,6 @@ def open_dir():
         else:
             # If the user clicked 'No', do nothing
             return
-        
-#Used to allow sorting of tree by clicking on heading
-def treeview_sort_column(tv, col, reverse):
-        l = [(tv.set(k, col), k) for k in tv.get_children('')]
-        try:
-            l.sort(key = lambda x: int(x[0]), reverse=reverse)
-        except ValueError:
-            l.sort(reverse=reverse)
-
-        # rearrange items in sorted positions
-        for index, (val, k) in enumerate(l):
-            tv.move(k, '', index)
-        # reverse sort next time
-        tv.heading(col, command=lambda: treeview_sort_column(tv, col, not reverse))
 
 #Used to check if response is received
 def callback(request_id, response, exception):
@@ -154,84 +154,6 @@ def center_window(root):
     position_right = int(screen_width / 2 - window_width / 2)
 
     root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
-
-#Generates schedule
-def gen_schedule(year,month):
-    #Verification stuff
-    creds = None
-    if os.path.exists(CREDENTIALS_PATH):
-        with open(CREDENTIALS_PATH, 'rb') as token:
-            creds = pickle.load(token)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                CLIENT_SECRET_PATH, SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open(CREDENTIALS_PATH, 'wb') as token:
-            pickle.dump(creds, token)
-    service = build('calendar', 'v3', credentials=creds)
-    # Call the Calendar API
-    # open the file in read mode
-    with open('details.json', 'r') as file:
-        data = json.load(file)
-
-    #Create a string list of Room No + Name
-    namesList = []
-    for item in data:
-        color = 1 if item["Enrollment"].lower() == "sp" else 6
-        namesList.append("[" + str(item["Room No"]) + "] "+ item["Name"]+ ","+ str(color))
-
-    #Get days in a month to determine number of iterations, function returns a tuple so [1] needed
-    days = calendar.monthrange(year, month)[1]
-    #List for storing all unused pairs
-    Pairs = get_pairs(namesList)
-    #List for storing USABLE pairs
-    ValidPairs = get_pairs(namesList)
-    #Dictionary for counting how many shifts are done per month
-    countDict = {value: 0 for value in namesList}
-    # Select a random pair for each day of the month and add it to calendar, +1 here because in range excludes last value
-
-    # Create batch request
-    batch = service.new_batch_http_request(callback=callback)
-
-    for i in range(1, days+1):
-        #Random pair is seleced here using the random function
-        Selected = ValidPairs[random.randint(0,len(ValidPairs)-1)]
-        #Change tuple into list
-        Pair = list(Selected)
-
-        residentAssistant1 = Pair[0].split(",")
-        residentAssistant2 = Pair[1].split(",")
-        events = [
-            event_dict(residentAssistant1[0],residentAssistant1[1],year,month,i),
-            event_dict(residentAssistant2[0],residentAssistant2[1],year,month,i)
-                  ]
-        for event in events:
-            batch.add(service.events().insert(calendarId='primary', body=event))
-
-        #Add count to number of shifts
-        countDict[Pair[0]] += 1
-        countDict[Pair[1]] += 1
-        Pairs.remove(Selected)
-        ValidPairs.remove(Selected)
-        #IMPORTANT!!! If any person has done 3 shifts, their entries have to be removed from valid pairs
-        if countDict[Pair[0]] == 3:
-            ValidPairs = [tup for tup in ValidPairs if Pair[0] not in tup]
-        if countDict[Pair[1]] == 3:
-            ValidPairs = [tup for tup in ValidPairs if Pair[1] not in tup]
-        if not ValidPairs:
-            break
-
-    batch.execute()
-    
-    #Write remaing pairs left into remaining pairs file along with number of shifts each person has done
-    with open('remainingPairs.txt', 'w') as f:
-        for item in Pairs:
-            f.write(str(item) + "\n")
-            
-    return countDict
 
 #adds inputted record and saves it to json
 def add_rec(NE,RE,EO,RT):
@@ -318,7 +240,129 @@ def delete_rec(RT):
 is_editing = False
 selected_id=None
 
-#Generate duty
+#Generates schedule
+def gen_schedule(year,month):
+    #Verification stuff
+    creds = None
+    if os.path.exists(CREDENTIALS_PATH):
+        with open(CREDENTIALS_PATH, 'rb') as token:
+            creds = pickle.load(token)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                CLIENT_SECRET_PATH, SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open(CREDENTIALS_PATH, 'wb') as token:
+            pickle.dump(creds, token)
+    service = build('calendar', 'v3', credentials=creds)
+    # Call the Calendar API
+    # open the file in read mode
+    with open('details.json', 'r') as file:
+        data = json.load(file)
+
+    #Create a string list of Room No + Name
+    namesList = []
+    for item in data:
+        color = 1 if item["Enrollment"].lower() == "sp" else 6
+        namesList.append("[" + str(item["Room No"]) + "] "+ item["Name"]+ ","+ str(color))
+
+    #Get days in a month to determine number of iterations, function returns a tuple so [1] needed
+    days = calendar.monthrange(year, month)[1]
+    #List for storing all unused pairs
+    Pairs = get_pairs(namesList)
+    #List for storing USABLE pairs
+    ValidPairs = get_pairs(namesList)
+    #Dictionary for counting how many shifts are done per month
+    countDict = {value: 0 for value in namesList}
+    # Select a random pair for each day of the month and add it to calendar, +1 here because in range excludes last value
+
+    # Create batch request
+    batch = service.new_batch_http_request(callback=callback)
+
+    for i in range(1, days+1):
+        #Random pair is seleced here using the random function
+        Selected = ValidPairs[random.randint(0,len(ValidPairs)-1)]
+        #Change tuple into list
+        Pair = list(Selected)
+
+        residentAssistant1 = Pair[0].split(",")
+        residentAssistant2 = Pair[1].split(",")
+        events = [
+            event_dict(residentAssistant1[0],residentAssistant1[1],year,month,i),
+            event_dict(residentAssistant2[0],residentAssistant2[1],year,month,i)
+                  ]
+        for event in events:
+            batch.add(service.events().insert(calendarId='primary', body=event))
+
+        #Add count to number of shifts
+        countDict[Pair[0]] += 1
+        countDict[Pair[1]] += 1
+        Pairs.remove(Selected)
+        ValidPairs.remove(Selected)
+        #IMPORTANT!!! If any person has done 3 shifts, their entries have to be removed from valid pairs
+        if countDict[Pair[0]] == 3:
+            ValidPairs = [tup for tup in ValidPairs if Pair[0] not in tup]
+        if countDict[Pair[1]] == 3:
+            ValidPairs = [tup for tup in ValidPairs if Pair[1] not in tup]
+        if not ValidPairs:
+            break
+
+    batch.execute()
+    
+    #Write remaing pairs left into remaining pairs file along with number of shifts each person has done
+    with open('remainingPairs.txt', 'w') as f:
+        for item in Pairs:
+            f.write(str(item) + "\n")
+            
+    return countDict
+
+# Actual GenerateSchedule function and re-enables the button
+def generate_and_reenable(month,year,message,sBut,tLab,tabView):
+    shiftDict = gen_schedule(int(year),month_to_int(month))
+    #Destroy original label
+    tLab.destroy()
+    #Display shifts done in Shifts tab of gui
+    style_tree()
+    # Create the treeview
+    tree = ttk.Treeview(tabView.tab("Shifts Done\nKD回数"), show='headings')
+    # define columns
+    tree["columns"]=("Name / 名前","Shifts Done / KD回数")
+    # format columns
+    tree.column("Name / 名前", anchor="center", width=100)
+    tree.column("Shifts Done / KD回数", anchor="center", width=100)
+    # set heading
+    tree.heading("Name / 名前", text="Name / 名前", anchor="center", command=lambda: treeview_sort_column(tree, "Name / 名前", False))
+    tree.heading("Shifts Done / KD回数", text="Shifts Done / KD回数", anchor="center", command=lambda: treeview_sort_column(tree, "Shifts Done / KD回数", False))
+    # add data
+    for key, value in shiftDict.items():
+        lis = key.split(',')
+        tree.insert("", tk.END, values=(lis[0], value))
+    # Create the scrollbar
+    scrollbar = ttk.Scrollbar(tabView.tab("Shifts Done\nKD回数"), orient="vertical", command=tree.yview)
+    tree.configure(yscrollcommand=scrollbar.set)
+
+    # Create Header for shifts done
+    label3 = customtkinter.CTkLabel(tabView.tab("Shifts Done\nKD回数"), text= month +' '+year , font = ("Italic",20), padx=0, pady=0)
+    label3.grid(row=0, column=0, columnspan=2, pady=0, padx=0, sticky="nsew")
+
+    # Then the tree and scrollbar (ensure these are grid'ed on row 1, so they appear below the label)
+    tree.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
+    scrollbar.grid(row=1, column=1, sticky='nsew')
+    
+    # Configure the grid to take up available space
+    tabView.tab("Shifts Done\nKD回数").grid_rowconfigure(0, weight=1)
+    tabView.tab("Shifts Done\nKD回数").grid_rowconfigure(1, weight=2)
+    tabView.tab("Shifts Done\nKD回数").grid_columnconfigure(0, weight=1)
+
+    message.configure(text_color="#40ff06",text=f"Generation Complete!\nスケジュール完了！☜( Φ∀Φ )ﾖｼｯ")
+
+    #Readjust the width to fix a bug where the bottom corners of the button disappear after reenabling it
+    bWid = sBut.cget("width")
+    sBut.configure(state="normal",width=bWid)
+
+#For error handling
 def generate_duty(month,year,RT,message,sBut,tLab,tabView):
         if month == "Month / 月" or year == "Year / 年":
             message.configure(text="Please select a month and a year\n日付を入力してくだだい （#^ω^）", text_color="#fa3c58")
@@ -327,55 +371,9 @@ def generate_duty(month,year,RT,message,sBut,tLab,tabView):
         else:
             sBut.configure(state="disabled")
             message.configure(text_color="#00FFD3",text=f"Generating Schedule, Please wait... \n スケジュール作成中… (´・ω・`)")
-            
-            # Define a new function that includes the generateSchedule function and re-enables the button
-            def generate_and_reenable():
-                shiftDict = gen_schedule(int(year),month_to_int(month))
-                #Destroy original label
-                tLab.destroy()
-                #Display shifts done in Shifts tab of gui
-                style_tree()
-                # Create the treeview
-                tree = ttk.Treeview(tabView.tab("Shifts Done\nKD回数"), show='headings')
-                # define columns
-                tree["columns"]=("Name / 名前","Shifts Done / KD回数")
-                # format columns
-                tree.column("Name / 名前", anchor="center", width=100)
-                tree.column("Shifts Done / KD回数", anchor="center", width=100)
-                # set heading
-                tree.heading("Name / 名前", text="Name / 名前", anchor="center", command=lambda: treeview_sort_column(tree, "Name / 名前", False))
-                tree.heading("Shifts Done / KD回数", text="Shifts Done / KD回数", anchor="center", command=lambda: treeview_sort_column(tree, "Shifts Done / KD回数", False))
-                # add data
-                for key, value in shiftDict.items():
-                    lis = key.split(',')
-                    tree.insert("", tk.END, values=(lis[0], value))
-                # Create the scrollbar
-                scrollbar = ttk.Scrollbar(tabView.tab("Shifts Done\nKD回数"), orient="vertical", command=tree.yview)
-                tree.configure(yscrollcommand=scrollbar.set)
-
-                # Create Header for shifts done
-                label3 = customtkinter.CTkLabel(tabView.tab("Shifts Done\nKD回数"), text= month +' '+year , font = ("Italic",20), padx=0, pady=0)
-                label3.grid(row=0, column=0, columnspan=2, pady=0, padx=0, sticky="nsew")
-
-                # Then the tree and scrollbar (ensure these are grid'ed on row 1, so they appear below the label)
-                tree.grid(row=1, column=0, sticky='nsew', padx=0, pady=0)
-                scrollbar.grid(row=1, column=1, sticky='nsew')
-                
-                # Configure the grid to take up available space
-                tabView.tab("Shifts Done\nKD回数").grid_rowconfigure(0, weight=1)
-                tabView.tab("Shifts Done\nKD回数").grid_rowconfigure(1, weight=2)
-                tabView.tab("Shifts Done\nKD回数").grid_columnconfigure(0, weight=1)
-
-
-
-                message.configure(text_color="#40ff06",text=f"Generation Complete!\nスケジュール完了！☜( Φ∀Φ )ﾖｼｯ")
-
-                #Readjust the width to fix a bug where the bottom corners of the button disappear after reenabling it
-                bWid = sBut.cget("width")
-                sBut.configure(state="normal",width=bWid)
-            
+    
             # Run the new function on a separate thread
-            thread = threading.Thread(target=generate_and_reenable)
+            thread = threading.Thread(target=lambda:generate_and_reenable(month,year,message,sBut,tLab,tabView))
             thread.start()
 
 
