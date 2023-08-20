@@ -6,6 +6,8 @@ A custom-built GUI desktop application that automates and improves the process o
 
 The application provides a user-friendly interface allowing Resident Assistants to easily input student details, manage shifts, and generate an organized and balanced monthly schedule based on saved details. The schedule is generated on the user's Google Calendar where they are able to edit it as they please. This not only saves time but also ensures fairness in task distribution among the residents.
 
+Demo: https://youtu.be/iP9341OQQR0
+
 ## Built With
 
 [![Python]][Python-url]
